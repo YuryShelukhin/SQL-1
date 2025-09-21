@@ -19,29 +19,18 @@ ORDER BY район;`
 <img src = "img/1-2-2.png" width = 60%> 
 ---
 
-### Задание 12
+### Задание 2
 Получите из таблицы платежей за прокат фильмов информацию по платежам, которые выполнялись в промежуток с 15 июня 2005 года по 18 июня 2005 года включительно и стоимость которых превышает 10.00.
 
-
 #### Решение 2.
-Получить данные можно визуальным изучением таблиц  
-<img src = "img/2-1.png" width = 60%>   
-<img src = "img/2-2.png" width = 60%>   
-или с помощью sql-скрипта  
-`SELECT 
-    t.TABLE_NAME,
-    k.COLUMN_NAME AS PRIMARY_KEY,
-    k.CONSTRAINT_NAME
-FROM information_schema.TABLES   k 
-    ON t.TABLE_SCHEMA = k.TABLE_SCHE
-    AND t.TABLE_NAME = k.TABLE_NAME 
-    AND k.CONSTRAINT_NAME = 'PRIMARY'
-WHERE t.TABLE_SCHEMA = 'sakila'
-    AND t.TABLE_TYPE = 'BASE TABLE'
-ORDER BY t.TABLE_NAME;`  
-<img src = "img/2-3.png" width = 60%>
-
-[файл в формате Excel](files/task_2.ods)
+Выполним запрос для по условию задания.    
+`SELECT payment_date AS 'дата платежа',
+		amount AS 'стоимость'
+FROM payment
+WHERE payment_date BETWEEN '2005-06-15 00:00:00' AND '2005-06-18 23:59:59'
+	AND amount > 10.00
+ORDER BY payment_date;`     
+<img src = "img/2-1.png" width = 60%> 
 ---
 
 
@@ -76,3 +65,5 @@ ORDER BY t.TABLE_NAME;`
 ### Задание 6*
 Доработайте запрос из предыдущего задания, скорректируйте значения в новых колонках: первая буква должна быть заглавной, остальные — строчными.
 
+[файл в формате Excel](files/task_2.ods)
+---
