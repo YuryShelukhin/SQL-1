@@ -5,52 +5,23 @@
 ---
 
 #### Решение 1.
-1.1. Запустим MYSQL в контейнере Docker.    
-`~$ docker run --name test-db -p 3306:3306 -e MYSQL_ROOT_PASSWORD=secret -d mysql:latest`   
-Dbeaver не соединяется - "Public Key Retrieval is not allowed". Исправим во вкладке Driver Properties параметр "allowPublicKeyRetrieval" на значение "true".    
-<img src = "img/1-1.png" width = 60%>     
-1.2. Откроем SQL-скрипт.    
-<img src = "img/1-2-1.png" width = 60%>  
-С помощью SQ-команды создадим пользователя.    
-`CREATE USER 'sys_temp'@'%' IDENTIFIED BY 'password';`  Вместо localhost  используем `%`, так как был конфликт при смене аутентификации (localhost root  и sys_temp имели разные ip). В работе этот вариант небезопасен, но для решения подойдет.  
-<img src = "img/1-2-2.png" width = 60%>      
-1.3 Выполним запрос для вывода всех пользователей.      
-`SELECT user FROM mysql.user;`  
-<img src = "img/1-3-1.png" width = 60%>    
-<img src = "img/1-3-2.png" width = 60%>   
-1.4 Выполним запрос для выдачи всех прав для пользователя sys_temp.   
-`GRANT ALL PRIVILEGES ON *.* TO 'sys_temp'@'%';`  
-<img src = "img/1-4.png" width = 60%>  
-1.5 Выполним запрос для просмотра прав для пользователя sys_temp.   
-`SHOW GRANTS FOR 'sys_temp'@'%';`  
-<img src = "img/1-5.png" width = 60%>  
-1.6 Переподключимся к базе данных от имени sys_temp и проверим.  
-`SELECT USER(), CURRENT_USER();`  
-<img src = "img/1-5.png" width = 60%>    
-1.7 Скачать дамп базы данных посредством dbeaver не получилось, так как local client не cмог найти mysql 
-в докере. Поэтому пришлось заталкивать дамп базы из хоста в докер, а затем загружать в mysql.  
-`docker cp /home/yury/HW/SQL/DDL-DML/files/sakila-schema.sql  747aebd89200:/tmp/sakila-schema.sql    
- docker exec -it 747aebd89200 ls -la /tmp/    
- docker exec -it 747aebd89200 mysql -u sys_temp -p -e "CREATE DATABASE IF NOT EXISTS sakila;"    
- docker exec -it 747aebd89200 bash -c "mysql -u sys_temp -ppassword sakila < /tmp/dump.sql"`    
-<img src = "img/1-7.png" width = 60%>   
-1.8 Сформируем ER-диаграмму и, используя команду, выведем все таблицы базы данных.  
-<img src = "img/1-8-1.png" width = 60%>  
-`SHOW TABLES FROM sakila;`  
-<img src = "img/1-8-2.png" width = 60%>  
-Также загрузим данные.  
-`docker cp /home/yury/HW/SQL/DDL-DML/files/sakila-data.sql 747aebd89200:/tmp/data.sql
-docker cp /home/yury/HW/SQL/DDL-DML/files/sakila-data.sql 747aebd89200:/tmp/data.sql`
-<img src = "img/1-8-2-2.png" width = 60%>   
-
-Простыня со всеми запросами.  
-<img src = "img/1-8-3.png" width = 60%>  
+1.1. Запустим MYSQL в контейнере Docker-compose.    
+`docker-compose up -d`     
+1.2. Откроем SQL-скрипт. Выполним запрос для прросмотра названия колонок.       
+`SELECT * FROM address;` 
+<img src = "img/1-2-1.png" width = 60%>    
+Выполним запрос для по условию задания.  
+`SELECT DISTINCT district AS район
+FROM address
+WHERE district LIKE 'K%a' 
+  AND district NOT LIKE '% %'
+ORDER BY район;` 
+<img src = "img/1-2-2.png" width = 60%> 
 ---
 
+### Задание 12
+Получите из таблицы платежей за прокат фильмов информацию по платежам, которые выполнялись в промежуток с 15 июня 2005 года по 18 июня 2005 года включительно и стоимость которых превышает 10.00.
 
-### Задание 2
-Получите из таблицы платежей за прокат фильмов информацию по платежам, которые выполнялись в промежуток с 15 июня 2005 года по 18 июня 2005 года **включительно** и стоимость которых превышает 10.00.
----
 
 #### Решение 2.
 Получить данные можно визуальным изучением таблиц  
@@ -61,9 +32,8 @@ docker cp /home/yury/HW/SQL/DDL-DML/files/sakila-data.sql 747aebd89200:/tmp/data
     t.TABLE_NAME,
     k.COLUMN_NAME AS PRIMARY_KEY,
     k.CONSTRAINT_NAME
-FROM information_schema.TABLES t
-LEFT JOIN information_schema.KEY_COLUMN_USAGE k 
-    ON t.TABLE_SCHEMA = k.TABLE_SCHEMA 
+FROM information_schema.TABLES   k 
+    ON t.TABLE_SCHEMA = k.TABLE_SCHE
     AND t.TABLE_NAME = k.TABLE_NAME 
     AND k.CONSTRAINT_NAME = 'PRIMARY'
 WHERE t.TABLE_SCHEMA = 'sakila'

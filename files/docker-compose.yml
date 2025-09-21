@@ -1,0 +1,25 @@
+version: '3.1'
+services:
+
+  db:
+    image: mysql:8.0
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
+    restart: always
+    environment: # можно вынести параметры окружения (4 строки) в отдельный файл .env
+      MYSQL_DATABASE: sakila
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_INNODB_BUFFER_POOL_SIZE: 512M
+      MYSQL_INNODB_LOG_FILE_SIZE: 256M
+    volumes:
+      - ./dbdata:/var/lib/mysql
+      - ./1_sakila.sql:/docker-entrypoint-initdb.d/1_sakila.sql
+      - ./2_sakila.sql:/docker-entrypoint-initdb.d/2_sakila.sql
+    ports: 
+       - "3306:3306"
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+        reservations:
+          memory: 1g
