@@ -80,9 +80,9 @@ ORDER BY last_name;`
     RIGHT(email, LENGTH(email) - POSITION('@' IN email)) AS 'Домен',
 	email AS 'Электронная почта'		
 FROM customer
-WHERE first_name = 'Kelly' OR first_name = 'Willie'
+WHERE POSITION('@' IN email) > 0
 ORDER BY email;`     
-<img src = "img/3-1.png" width = 60%>  
+<img src = "img/5-1.png" width = 60%>  
 ---
 
 
@@ -91,14 +91,17 @@ ORDER BY email;`
 
 #### Решение 6*.
 Выполним запрос для по условию задания.      
-`SELECT rental_date AS 'дата аренды'
-FROM rental
-ORDER BY rental_date DESC
-LIMIT 5;`     
-<img src = "img/3-1.png" width = 60%>  
+`SELECT
+	CONCAT(
+        UPPER(LEFT(LEFT(email, POSITION('@' IN email) - 1), 1)),
+        LOWER(SUBSTRING(LEFT(email, POSITION('@' IN email) - 1) FROM 2))) AS 'Имя пользователя',
+    CONCAT(
+        UPPER(LEFT(RIGHT(email, LENGTH(email) - POSITION('@' IN email)), 1)),
+        LOWER(SUBSTRING(RIGHT(email, LENGTH(email) - POSITION('@' IN email)) FROM 2))) AS 'Домен',
+	email AS 'Электронная почта'		
+FROM customer
+WHERE POSITION('@' IN email) > 0
+ORDER BY email;`     
+<img src = "img/6-1.png" width = 60%>  
 ---
 
-
-
-[файл в формате Excel](files/task_2.ods)
----
